@@ -114,7 +114,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS card_data
                     pin_code VARCHAR(10)
                     )''')
 if st.button("Upload data to MySQL"):
-    sql = """INSERT INTO card_data(card_holder,designation,mobile_number,email,website,area,city,state,pin_code,image) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    sql = """INSERT INTO card_data(card_holder,designation,mobile_number,email,website,area,city,state,pin_code) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
     c.execute(sql, (name[0], desgn[0], phone_no[0], email, url, area[0], city[0], state[0], pincode))
     mydb.commit()
     st.success("#### Uploaded to database successfully!")
