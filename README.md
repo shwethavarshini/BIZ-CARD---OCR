@@ -2,7 +2,7 @@
 BIZ CARD is an user-friendly web appilication developed to recognize, extract and store the details of a business card such as card-holder name, Email Id, mobile number, address, website URL, etc. The application gets the Business card in an image format and extracts the information and stores in MySQL. The stored data is then displayed on streamlit page on the wish of the user.
 
 ## REQUIREMENTS
-### import streamlit as st
+#### import streamlit as st
 ### from PIL import Image
 ### import easyocr as ocr
 ### import numpy as np
