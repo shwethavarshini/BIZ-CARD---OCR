@@ -95,7 +95,7 @@ state.append(address[2])
 # CONNECTING TO MYSQL DATABASE
 mydb = sql.connect(host="localhost",
                    user="root",
-                   password="jaya1976",
+                   password="password",
                    database= "bizcards"
                   )
 c = mydb.cursor(buffered=True)
@@ -113,6 +113,65 @@ c.execute('''CREATE TABLE IF NOT EXISTS card_data
                     state TEXT,
                     pin_code VARCHAR(10)
                     )''')
+if st.button("Upload data to MySQL"):
+    sql = """INSERT INTO card_data(card_holder,designation,mobile_number,email,website,area,city,state,pin_code,image) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    c.execute(sql, (name[0], desgn[0], phone_no[0], email, url, area[0], city[0], state[0], pincode))
+    mydb.commit()
+    st.success("#### Uploaded to database successfully!")
+
+# MODIFICATIONS
+if st.button("Click to modify stored data"):
+    col1, col2, col3 = st.columns([3, 3, 2])
+    col2.markdown("## Alter or Delete the data here")
+    column1, column2 = st.columns(2, gap="large")
+    try:
+        with column1:
+            c.execute("SELECT card_holder FROM card_data")
+            result = c.fetchall()
+            business_cards = {}
+            for row in result:
+                business_cards[row[0]] = row[0]
+            selected_card = st.selectbox("Select a card holder name to update", list(business_cards.keys()))
+            st.markdown("#### Update or modify any data below")
+            c.execute("select * from card_data WHERE card_holder=%s", (selected_card,))
+            result = c.fetchone()
+
+            # DISPLAYING ALL THE INFORMATIONS
+            card_holder = st.text_input("Card_Holder", result[0])
+            designation = st.text_input("Designation", result[1])
+            mobile_number = st.text_input("Mobile_Number", result[2])
+            email = st.text_input("Email", result[3])
+            website = st.text_input("Website", result[4])
+            area = st.text_input("Area", result[5])
+            city = st.text_input("City", result[6])
+            state = st.text_input("State", result[7])
+            pin_code = st.text_input("Pin_Code", result[8])
+
+            if st.button("Do and save changes"):
+                # Update the information for the selected business card in the database
+                c.execute("""UPDATE card_data SET card_holder=%s,designation=%s,mobile_number=%s,email=%s,website=%s,area=%s,city=%s,state=%s,pin_code=%s
+                                    WHERE card_holder=%s""", (card_holder, designation, mobile_number, email, website, area, city, state, pin_code, selected_card))
+                mydb.commit()
+                st.success("Information updated in database successfully.")
+
+        with column2:
+            c.execute("SELECT card_holder FROM card_data")
+            result = c.fetchall()
+            business_cards = {}
+            for row in result:
+                business_cards[row[0]] = row[0]
+            selected_card = st.selectbox("Select a card holder name to Delete", list(business_cards.keys()))
+            if st.button(f"Yes Delete {selected_card}'s Business Card"):
+                c.execute(f"DELETE FROM card_data WHERE card_holder='{selected_card}'")
+                mydb.commit()
+                st.success("Business card information deleted from database.")
+    except:
+        st.warning("There is no data available in the database")
+
+    if st.button("View updated data"):
+        c.execute("select * from card_data")
+        updated_df = pd.DataFrame(c.fetchall(), columns=["Card_Holder", "Designation", "Mobile_Number", "Email", "Website", "Area", "City", "State", "Pin_Code"])
+        st.write(updated_df)
 
 
 
